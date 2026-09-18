@@ -10,27 +10,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      # Официальный рабочий образ SGDK с Docker Hub
+      image: doragasu/gendev:v2.00
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install build tools and M68K GCC
+      - name: Build ROM
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-m68k-linux-gnu make curl unzip
-
-      - name: Setup SGDK
-        run: |
-          # Скачиваем и распаковываем SGDK
-          curl -sL https://github.com/Stephane-D/SGDK/releases/download/v2.00/sgdk200.zip -o sgdk.zip
-          unzip -q sgdk.zip -d $HOME/sgdk
-          echo "GDK=$HOME/sgdk" >> $GITHUB_ENV
-
-      - name: Build Genesis ROM
-        run: |
-          # Запуск сборки через нативный makefile
-          make -f $GDK/makefile.gen release
+          make -f $GENDEV/sgdk/makefile.gen release
 
       - name: Upload ROM Artifact
         uses: actions/upload-artifact@v4
